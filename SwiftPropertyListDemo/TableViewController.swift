@@ -30,6 +30,8 @@ class TableViewController: UITableViewController {
         // Do any additional setup after loading the view, typically from a nib.
         
         tableView.register(UITableViewCell.self, forCellReuseIdentifier: "cell")
+        
+        readPropertyList()
     }
 
     override func didReceiveMemoryWarning() {
@@ -62,7 +64,35 @@ class TableViewController: UITableViewController {
         return cell
     }
 
+    func readPropertyList(){
+        var format = PropertyListSerialization.PropertyListFormat.xml //format of the property list
+        var plistData:[String:AnyObject] = [:] // our data
+        let plistPath:String? = Bundle.main.path(forResource: "data", ofType: "plist")!
+        let plistXML = FileManager.default.contents(atPath: plistPath!)!
+            
+        do{
+            plistData = try PropertyListSerialization.propertyList(from: plistXML, options: .mutableContainersAndLeaves, format: &format)
+                as! [String:AnyObject]
+            
+            isColorInverted = plistData["Inverse Colors"] as! Bool
+            let red = plistData["Red"] as! CGFloat
+            let green = plistData["Green"] as! CGFloat
+            let blue = plistData["Blue"] as! CGFloat
+            color1 = UIColor(red: red, green: green, blue: blue, alpha: 1.0)
+            pies = plistData["Pies"] as! [String]
 
+        }
+        catch{
+            print("Error reading plist: \(error), format: \(format)")
+        }
+        
+
+        
+
+
+        
+        
+    }
     
 }
 
